@@ -35,12 +35,15 @@
 	<ItemGroup>
 		<None Include="wwwroot\**" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Remove="wwwroot\videos\FileName.txt" />
+	</ItemGroup>
   <ItemGroup>
     <Folder Include="wwwroot\images\" />
     <Folder Include="wwwroot\media\images\NewFolder\" />
     <Folder Include="wwwroot\media\names\NewFolder\" />
     <Folder Include="wwwroot\media\videos\NewFolder\" />
-    <Folder Include="wwwroot\videos\" />
 	
   </ItemGroup>
 
