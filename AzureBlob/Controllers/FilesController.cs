@@ -15,7 +15,6 @@ namespace AzureBlob1.Controllers
             _fileService = fileService;
         }
 
-
         [HttpGet]
         public async Task<IActionResult> ListAllblobs()
         {
