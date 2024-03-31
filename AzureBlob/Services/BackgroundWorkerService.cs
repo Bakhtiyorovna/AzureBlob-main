@@ -30,7 +30,7 @@ namespace AzureBlob1.Services
             var blobUri = $"https://{_storageAccount}.blob.core.windows.net";
             var blobServiceClient = new BlobServiceClient(new Uri(blobUri), credential);
                 
-            _filesContainer = blobServiceClient.GetBlobContainerClient("container");
+            _filesContainer = blobServiceClient.GetBlobContainerClient("container1");
         }
 
         protected async override Task ExecuteAsync(CancellationToken stoppingToken)

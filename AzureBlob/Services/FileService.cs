@@ -17,7 +17,7 @@ public class FileService
         var credential = new StorageSharedKeyCredential(_storageAccount, _key);
         var blobUri = $"https://{_storageAccount}.blob.core.windows.net";
         var blobServiceClient = new BlobServiceClient(new Uri(blobUri), credential);
-        _filesContainer = blobServiceClient.GetBlobContainerClient("container");
+        _filesContainer = blobServiceClient.GetBlobContainerClient("container1");
     }
 
     public async Task<List<BlobDto>> ListAsync()
@@ -42,7 +42,9 @@ public class FileService
     public async Task<BlobResponseDto> UploadAsync(IFormFile blob)
     {
         BlobResponseDto response = new();
-        BlobClient client = _filesContainer.GetBlobClient("video1");
+        Random random = new Random();
+        int number = random.Next(1000, 9999);
+        BlobClient client = _filesContainer.GetBlobClient("file_"+ number.ToString());
 
         await using (Stream data = blob.OpenReadStream())
         {
@@ -57,6 +59,10 @@ public class FileService
         return response;
     }
 
+    private string Guid()
+    {
+        throw new NotImplementedException();
+    }
 
     public async Task<Stream?> DownloadAsync(string blobFilename)
     {
