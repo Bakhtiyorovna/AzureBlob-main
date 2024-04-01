@@ -35,135 +35,135 @@ namespace AzureBlob1.Services
 
         protected async override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
+            //await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
 
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                try
-                {
-                    // Log a message to indicate that the service is running
-                    await Console.Out.WriteLineAsync("Service is running.");
+            //while (!stoppingToken.IsCancellationRequested)
+            //{
+            //    try
+            //    {
+            //        // Log a message to indicate that the service is running
+            //        await Console.Out.WriteLineAsync("Service is running.");
 
-                    string[] files = Directory.GetFiles("wwwroot/media/videos");
-                    string[] names = Directory.GetFiles("wwwroot/media/names");
-                    string[] images = Directory.GetFiles("wwwroot/media/images");
+            //        string[] files = Directory.GetFiles("wwwroot/media/videos");
+            //        string[] names = Directory.GetFiles("wwwroot/media/names");
+            //        string[] images = Directory.GetFiles("wwwroot/media/images");
 
-                    if (names != null && names.Length > 0)
-                    {
-                        foreach (string name in names)
-                        {
-                            using (IServiceScope scope = _serviceProvider.CreateScope())
-                            {
-                                var _repository = scope.ServiceProvider.GetRequiredService<IRepository<Video>>();
+            //        if (names != null && names.Length > 0)
+            //        {
+            //            foreach (string name in names)
+            //            {
+            //                using (IServiceScope scope = _serviceProvider.CreateScope())
+            //                {
+            //                    var _repository = scope.ServiceProvider.GetRequiredService<IRepository<Video>>();
 
-                                Video saveVideo = new Video();
+            //                    Video saveVideo = new Video();
 
-                                string clearName = Path.GetFileName(name);
-                                saveVideo.Title = clearName.Split(new[] { "___" }, StringSplitOptions.None).First();
+            //                    string clearName = Path.GetFileName(name);
+            //                    saveVideo.Title = clearName.Split(new[] { "___" }, StringSplitOptions.None).First();
 
-                                // Uploading videos
-                                string[] VideosWithName = files
-                                   .Where(filePath => Path.GetFileName(filePath).Contains(clearName))
-                                   .ToArray();
-                                foreach (string file in VideosWithName)
-                                {
-                                    // Process each file
+            //                    // Uploading videos
+            //                    string[] VideosWithName = files
+            //                       .Where(filePath => Path.GetFileName(filePath).Contains(clearName))
+            //                       .ToArray();
+            //                    foreach (string file in VideosWithName)
+            //                    {
+            //                        // Process each file
 
-                                    var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read);
-                                    var video = new FormFile(baseStream: fileStream, baseStreamOffset: 0,
-                                        length: new FileInfo(file).Length, name: Guid.NewGuid().ToString(), fileName: Path.GetFileName(file));
-
-
-                                    if(OperatingSystem.IsWindows())
-                                    {
-                                        var _videoDuration = scope.ServiceProvider.GetRequiredService<IVideoDurationHelper>();
-                                        saveVideo.VideoDuration = await _videoDuration.GetVideoDurationAsync(video);
-                                    }
-                                    else saveVideo.VideoDuration = 0;
+            //                        var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read);
+            //                        var video = new FormFile(baseStream: fileStream, baseStreamOffset: 0,
+            //                            length: new FileInfo(file).Length, name: Guid.NewGuid().ToString(), fileName: Path.GetFileName(file));
 
 
-                                    saveVideo.VideoName = video.FileName;
-                                    string contentType = "video/mp4";
-                                    BlobUploadOptions videoUploadOptions = new BlobUploadOptions
-                                    {
-                                        HttpHeaders = new BlobHttpHeaders
-                                        {
-                                            ContentType = contentType
-                                        }
-                                    };
-                                    // Upload the file to Azure Blob Storage
-                                    BlobClient videoUpload = _filesContainer.GetBlobClient(Path.GetFileName(file));
+            //                        if(OperatingSystem.IsWindows())
+            //                        {
+            //                            var _videoDuration = scope.ServiceProvider.GetRequiredService<IVideoDurationHelper>();
+            //                            saveVideo.VideoDuration = await _videoDuration.GetVideoDurationAsync(video);
+            //                        }
+            //                        else saveVideo.VideoDuration = 0;
+
+
+            //                        saveVideo.VideoName = video.FileName;
+            //                        string contentType = "video/mp4";
+            //                        BlobUploadOptions videoUploadOptions = new BlobUploadOptions
+            //                        {
+            //                            HttpHeaders = new BlobHttpHeaders
+            //                            {
+            //                                ContentType = contentType
+            //                            }
+            //                        };
+            //                        // Upload the file to Azure Blob Storage
+            //                        BlobClient videoUpload = _filesContainer.GetBlobClient(Path.GetFileName(file));
                                     
-                                    await using (Stream streamVideo = video.OpenReadStream())
-                                    {
+            //                        await using (Stream streamVideo = video.OpenReadStream())
+            //                        {
                                         
-                                        await videoUpload.UploadAsync(streamVideo, videoUploadOptions);
+            //                            await videoUpload.UploadAsync(streamVideo, videoUploadOptions);
                                         
-                                        streamVideo.Dispose();
-                                        streamVideo.Close();
-                                    }
+            //                            streamVideo.Dispose();
+            //                            streamVideo.Close();
+            //                        }
 
-                                    saveVideo.VideoUrl = videoUpload.Uri.AbsoluteUri;
+            //                        saveVideo.VideoUrl = videoUpload.Uri.AbsoluteUri;
 
-                                    fileStream.Dispose();
-                                    fileStream.Close();
-                                    // Delete the file from the local directory
-                                    File.Delete(file);
-                                }
+            //                        fileStream.Dispose();
+            //                        fileStream.Close();
+            //                        // Delete the file from the local directory
+            //                        File.Delete(file);
+            //                    }
 
-                                // Uploading Images
-                                string[] ImagesWithName = images
-                                  .Where(filePath => Path.GetFileName(filePath).Contains(clearName))
-                                  .ToArray();
+            //                    // Uploading Images
+            //                    string[] ImagesWithName = images
+            //                      .Where(filePath => Path.GetFileName(filePath).Contains(clearName))
+            //                      .ToArray();
 
-                                foreach (string file in ImagesWithName)
-                                {
-                                    // Process each file
-                                    var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read);
-                                    var image = new FormFile(baseStream: fileStream, baseStreamOffset: 0,
-                                        length: new FileInfo(file).Length, name: Guid.NewGuid().ToString(), fileName: Path.GetFileName(file));
+            //                    foreach (string file in ImagesWithName)
+            //                    {
+            //                        // Process each file
+            //                        var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read);
+            //                        var image = new FormFile(baseStream: fileStream, baseStreamOffset: 0,
+            //                            length: new FileInfo(file).Length, name: Guid.NewGuid().ToString(), fileName: Path.GetFileName(file));
 
-                                    //BlobUploadOptions imageUploadOptions = new BlobUploadOptions
-                                    //{
-                                    //    HttpHeaders = new BlobHttpHeaders
-                                    //    {
-                                    //        ContentType = image.ContentType
-                                    //    }
-                                    //};
+            //                        //BlobUploadOptions imageUploadOptions = new BlobUploadOptions
+            //                        //{
+            //                        //    HttpHeaders = new BlobHttpHeaders
+            //                        //    {
+            //                        //        ContentType = image.ContentType
+            //                        //    }
+            //                        //};
 
-                                    // Upload the file to Azure Blob Storage
-                                    BlobClient imageUpload = _filesContainer.GetBlobClient(Path.GetFileName(file));
-                                    await using (Stream streamImage = image.OpenReadStream())
-                                    {
-                                        await imageUpload.UploadAsync(streamImage);
+            //                        // Upload the file to Azure Blob Storage
+            //                        BlobClient imageUpload = _filesContainer.GetBlobClient(Path.GetFileName(file));
+            //                        await using (Stream streamImage = image.OpenReadStream())
+            //                        {
+            //                            await imageUpload.UploadAsync(streamImage);
 
-                                        streamImage.Dispose();
-                                        streamImage.Close();
-                                    }
-                                    saveVideo.VideoImageName = image.FileName;
-                                    saveVideo.VideoImageUrl = imageUpload.Uri.AbsoluteUri;
+            //                            streamImage.Dispose();
+            //                            streamImage.Close();
+            //                        }
+            //                        saveVideo.VideoImageName = image.FileName;
+            //                        saveVideo.VideoImageUrl = imageUpload.Uri.AbsoluteUri;
 
-                                    fileStream.Dispose();
-                                    fileStream.Close();
-                                    // Delete the file from the local directory
-                                    File.Delete(file);
-                                }
+            //                        fileStream.Dispose();
+            //                        fileStream.Close();
+            //                        // Delete the file from the local directory
+            //                        File.Delete(file);
+            //                    }
 
-                                File.Delete(name);
-                                await _repository.AddAsync(saveVideo);
-                                await _repository.SaveAsync();
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    // Log and handle any exceptions that occur during processing
-                    _logger.LogError(ex, "An error occurred while processing a file.");
-                }
+            //                    File.Delete(name);
+            //                    await _repository.AddAsync(saveVideo);
+            //                    await _repository.SaveAsync();
+            //                }
+            //            }
+            //        }
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        // Log and handle any exceptions that occur during processing
+            //        _logger.LogError(ex, "An error occurred while processing a file.");
+            //    }
 
-                await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
-            }
+            //    await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
+           // }
         }
     }
 }
