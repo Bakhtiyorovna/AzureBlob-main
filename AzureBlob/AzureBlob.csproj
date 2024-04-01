@@ -37,10 +37,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Content Remove="wwwroot\images\FileName.txt" />
 	  <Content Remove="wwwroot\videos\FileName.txt" />
 	</ItemGroup>
   <ItemGroup>
-    <Folder Include="wwwroot\images\" />
     <Folder Include="wwwroot\media\images\NewFolder\" />
     <Folder Include="wwwroot\media\names\NewFolder\" />
     <Folder Include="wwwroot\media\videos\NewFolder\" />

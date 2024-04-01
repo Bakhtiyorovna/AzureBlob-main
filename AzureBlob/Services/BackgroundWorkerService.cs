@@ -44,7 +44,7 @@ namespace AzureBlob1.Services
                     // Log a message to indicate that the service is running
                     await Console.Out.WriteLineAsync("Service is running.");
 
-                   // string[] files = Directory.GetFiles("wwwroot/media/videos");
+                    string[] files = Directory.GetFiles("wwwroot/media/videos");
                     string[] names = Directory.GetFiles("wwwroot/media/names");
                     string[] images = Directory.GetFiles("wwwroot/media/images");
 
